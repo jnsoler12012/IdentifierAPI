@@ -1,9 +1,9 @@
 import { default as petitionGlobalContent } from "./petitionGlobalContent.js"
 import * as cheerio from 'cheerio';
 
-export default async function () {
+export default async function (parameters) {
 
-    return await petitionGlobalContent().then((response) => {
+    return await petitionGlobalContent(parameters).then((response) => {
         // console.log('final repsuesta __________', response)
         const $ = cheerio.load(response);
 
@@ -12,6 +12,13 @@ export default async function () {
         var bodyHtml = /<body.*?>([\s\S]*)<\/body>/.exec(response.toString())[1];
         var $bodyElement = $(bodyHtml);
 
+        var currentStopTime = $bodyElement
+            .filter('p')
+            .filter(
+                (i, element) => (
+                    ($(element).text().replace(/\s+/g, "").toLowerCase().includes("currently"))
+                )
+            ).text().trim().replace('Currently:', "").trim()
 
         var formattedStopBusInfo = $bodyElement.filter('.no-bullets')
             .find('li')
@@ -74,6 +81,7 @@ export default async function () {
             .get();
 
         return ({
+            busStopTime: currentStopTime,
             busStopInfo: formattedStopBusInfo,
             busStopRoutes: (formattedStopBusRoutes.length <= 0 && signalNoRoutes) ? signalNoRoutes : formattedStopBusRoutes
         })

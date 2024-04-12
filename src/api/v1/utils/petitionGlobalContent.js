@@ -3,13 +3,13 @@
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
-var url = `
-https://mybusnow.njtransit.com/bustime/wireless/html/eta.jsp?route=---&direction=---&displaydirection=---&stop=---&findstop=on&selectedRtpiFeeds=&id=13767
+export default async function (parameters) {
+    const { busStopID } = parameters
+    const sleep = ms => new Promise(res => setTimeout(res, ms));
+    var url = `
+https://mybusnow.njtransit.com/bustime/wireless/html/eta.jsp?route=---&direction=---&displaydirection=---&stop=---&findstop=on&selectedRtpiFeeds=&id=${busStopID}
 `;
 
-
-export default async function () {
-    const sleep = ms => new Promise(res => setTimeout(res, ms));
     try {
         return (async () => {
             console.log('realizaremos peticion')
@@ -19,7 +19,7 @@ export default async function () {
                 var webpageHTML
                 const page = await browser.newPage()
                 await page.goto(url)
-                await sleep(3000)
+                await sleep(1000)
 
                 webpageHTML = await page.evaluate(() => document.querySelector('*').outerHTML);
 
@@ -37,6 +37,4 @@ export default async function () {
         console.log(error);
         return error
     }
-
-    return webpageHTML
 }

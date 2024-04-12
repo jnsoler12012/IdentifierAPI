@@ -4,8 +4,15 @@ import errorController from '../errorController.js'
 
 export default async (req, res) => {
     console.log("=====_____GET BUS ID INITIAL", req.body)
+
     try {
-        return formatterContent()
+        const idRequired = req.params?.idBusStop
+
+        const parameters = {
+            busStopID: idRequired
+        }
+
+        return formatterContent(parameters)
             .then((responseFormatted) => {
                 console.log('DEBE ESTAR FORMATEDA PARA MANDAR A HTML', responseFormatted);
                 if (!responseFormatted)
